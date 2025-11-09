@@ -1,0 +1,387 @@
+using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Utils;
+
+namespace ZombieSpeed
+{
+    public class Buttons
+    {
+        public static readonly Dictionary<string, PlayerButtons> ButtonMapping = new()
+        {
+            { "Alt1", PlayerButtons.Alt1 },
+            { "Alt2", PlayerButtons.Alt2 },
+            { "Attack", PlayerButtons.Attack },
+            { "Attack2", PlayerButtons.Attack2 },
+            { "Attack3", PlayerButtons.Attack3 },
+            { "Bullrush", PlayerButtons.Bullrush },
+            { "Cancel", PlayerButtons.Cancel },
+            { "Duck", PlayerButtons.Duck },
+            { "Grenade1", PlayerButtons.Grenade1 },
+            { "Grenade2", PlayerButtons.Grenade2 },
+            { "Space", PlayerButtons.Jump },
+            { "Left", PlayerButtons.Left },
+            { "W", PlayerButtons.Forward },
+            { "A", PlayerButtons.Moveleft },
+            { "S", PlayerButtons.Back },
+            { "D", PlayerButtons.Moveright },
+            { "E", PlayerButtons.Use },
+            { "R", PlayerButtons.Reload },
+            { "Shift", PlayerButtons.Speed },
+            { "Right", PlayerButtons.Right },
+            { "Run", PlayerButtons.Run },
+            { "Walk", PlayerButtons.Walk },
+            { "Weapon1", PlayerButtons.Weapon1 },
+            { "Weapon2", PlayerButtons.Weapon2 },
+            { "Zoom", PlayerButtons.Zoom },
+            { "Tab", PlayerButtons.Scoreboard },
+            { "Inspect", PlayerButtons.Inspect }
+        };
+    }
+
+    // [MinimumApiVersion(160)]
+    public class ZombieSpeed : BasePlugin, IPluginConfig<ZombieSpeedConfig>
+    {
+        public override string ModuleName => "ZombieSpeed";
+        public override string ModuleDescription => "T阵营玩家加速技能";
+        public override string ModuleAuthor => "僵尸加速技能";
+        public override string ModuleVersion => "0.0.1";
+
+        public ZombieSpeedConfig Config { get; set; } = new();
+
+        // 存储每个玩家的CD时间
+        private Dictionary<ulong, float> _playerCooldowns = new Dictionary<ulong, float>();
+        
+        // 存储每个玩家当前加速效果的结束时间
+        private Dictionary<ulong, float> _playerSpeedBoostEndTime = new Dictionary<ulong, float>();
+        
+        // 存储每个玩家加速效果的开始时间（用于计算FOV变化进度）
+        private Dictionary<ulong, float> _playerSpeedBoostStartTime = new Dictionary<ulong, float>();
+        
+        // 存储每个玩家的信息（用于检测按键按下）
+        private Dictionary<ulong, PlayerInfo> _playerInfo = new Dictionary<ulong, PlayerInfo>();
+        
+        // 存储每个玩家的原始FOV（用于加速结束后还原）
+        private Dictionary<ulong, uint> _playerOriginalFov = new Dictionary<ulong, uint>();
+
+        // 存储玩家信息
+        private class PlayerInfo
+        {
+            public PlayerButtons PrevButtons { get; set; } = 0;
+        }
+
+        public void OnConfigParsed(ZombieSpeedConfig config)
+        {
+            Config = config;
+        }
+
+        public override void Load(bool hotReload)
+        {
+            RegisterListener<Listeners.OnTick>(OnTick);
+            RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
+        }
+
+        public override void Unload(bool hotReload)
+        {
+            // 还原所有玩家的FOV
+            foreach (var player in Utilities.GetPlayers())
+            {
+                if (player != null && player.IsValid && _playerOriginalFov.ContainsKey(player.SteamID))
+                {
+                    SetFov(player, 90);
+                }
+            }
+            
+            _playerCooldowns.Clear();
+            _playerSpeedBoostEndTime.Clear();
+            _playerSpeedBoostStartTime.Clear();
+            _playerInfo.Clear();
+            _playerOriginalFov.Clear();
+        }
+
+        [GameEventHandler]
+        public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
+        {
+            var player = @event.Userid;
+            if (player != null && player.IsValid)
+            {
+                var steamId = player.SteamID;
+                _playerCooldowns.Remove(steamId);
+                _playerSpeedBoostEndTime.Remove(steamId);
+                _playerSpeedBoostStartTime.Remove(steamId);
+                _playerInfo.Remove(steamId);
+                
+                // 还原FOV
+                if (_playerOriginalFov.ContainsKey(steamId))
+                {
+                    SetFov(player, 90);
+                    _playerOriginalFov.Remove(steamId);
+                }
+            }
+            return HookResult.Continue;
+        }
+
+        private void OnTick()
+        {
+            var currentTime = Server.CurrentTime;
+
+            foreach (var player in Utilities.GetPlayers())
+            {
+                if (!player.IsValid || player.IsBot || !player.PlayerPawn.IsValid)
+                    continue;
+
+                var pawn = player.PlayerPawn.Value;
+                if (pawn == null || !pawn.IsValid)
+                    continue;
+
+                // 检查玩家是否为T阵营且存活
+                if (player.Team != CsTeam.Terrorist || pawn.Health <= 0)
+                {
+                    // 如果玩家不是T阵营或已死亡，清除加速效果并还原FOV
+                    if (_playerSpeedBoostEndTime.ContainsKey(player.SteamID))
+                    {
+                        _playerSpeedBoostEndTime.Remove(player.SteamID);
+                        _playerSpeedBoostStartTime.Remove(player.SteamID);
+                        if (pawn.VelocityModifier != 1.0f)
+                        {
+                            pawn.VelocityModifier = 1.0f;
+                        }
+                        // 还原FOV
+                        if (_playerOriginalFov.ContainsKey(player.SteamID))
+                        {
+                            SetFov(player, (int)_playerOriginalFov[player.SteamID]);
+                            _playerOriginalFov.Remove(player.SteamID);
+                        }
+                    }
+                    continue;
+                }
+
+                // 检查加速效果是否结束
+                if (_playerSpeedBoostEndTime.ContainsKey(player.SteamID))
+                {
+                    if (currentTime >= _playerSpeedBoostEndTime[player.SteamID])
+                    {
+                        // 加速效果结束，还原FOV
+                        _playerSpeedBoostEndTime.Remove(player.SteamID);
+                        _playerSpeedBoostStartTime.Remove(player.SteamID);
+                        pawn.VelocityModifier = 1.0f;
+                        if (_playerOriginalFov.ContainsKey(player.SteamID))
+                        {
+                            SetFov(player, (int)_playerOriginalFov[player.SteamID]);
+                            _playerOriginalFov.Remove(player.SteamID);
+                        }
+                    }
+                    else
+                    {
+                        // 保持加速效果
+                        pawn.VelocityModifier = Config.SpeedBoostMultiplier;
+                        
+                        // 渐进更新FOV
+                        UpdateFovProgressively(player, currentTime);
+                    }
+                }
+
+                // 检测R键按下（使用与DoubleJump相同的方法）
+                CheckPlayerButtonInput(player, pawn, currentTime);
+            }
+        }
+
+        [ConsoleCommand("css_speedboost", "使用加速技能")]
+        public void OnSpeedBoostCommand(CCSPlayerController? player, CommandInfo commandInfo)
+        {
+            if (player == null || !player.IsValid || player.IsBot)
+                return;
+
+            var pawn = player.PlayerPawn.Value;
+            if (pawn == null || !pawn.IsValid || pawn.Health <= 0)
+            {
+                player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}你必须存活才能使用此技能！");
+                return;
+            }
+
+            // 检查是否为T阵营
+            if (player.Team != CsTeam.Terrorist)
+            {
+                player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}只有T阵营玩家可以使用此技能！");
+                return;
+            }
+
+            var steamId = player.SteamID;
+            var currentTime = Server.CurrentTime;
+
+            // 检查CD
+            if (_playerCooldowns.ContainsKey(steamId))
+            {
+                var cooldownEndTime = _playerCooldowns[steamId];
+                if (currentTime < cooldownEndTime)
+                {
+                    var remainingTime = cooldownEndTime - currentTime;
+                    player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}技能冷却中，剩余时间: {remainingTime:F1}秒");
+                    return;
+                }
+            }
+
+            // 使用技能
+            if (pawn != null && pawn.IsValid)
+            {
+                // 保存原始FOV（如果还没有保存），默认FOV是90
+                if (!_playerOriginalFov.ContainsKey(steamId))
+                {
+                    var currentFov = player.DesiredFOV;
+                    // 如果FOV无效（为0或小于90），使用默认值90
+                    _playerOriginalFov[steamId] = (currentFov <= 0 || currentFov < 90) ? 90 : currentFov;
+                }
+                
+                pawn.VelocityModifier = Config.SpeedBoostMultiplier;
+                _playerSpeedBoostStartTime[steamId] = currentTime;
+                _playerSpeedBoostEndTime[steamId] = currentTime + Config.SpeedBoostDuration;
+                _playerCooldowns[steamId] = currentTime + Config.SpeedBoostCooldown;
+
+                player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}加速技能已激活！持续 {Config.SpeedBoostDuration} 秒");
+            }
+        }
+
+        // 检测R键按下（使用与DoubleJump相同的方法）
+        private void CheckPlayerButtonInput(CCSPlayerController player, CCSPlayerPawn pawn, float currentTime)
+        {
+            if (pawn == null || !pawn.IsValid || pawn.Health <= 0)
+                return;
+
+            var steamId = player.SteamID;
+            
+            // 获取或创建玩家信息
+            if (!_playerInfo.TryGetValue(steamId, out var playerInfo))
+            {
+                playerInfo = new PlayerInfo();
+                _playerInfo.Add(steamId, playerInfo);
+            }
+
+            // 获取当前按钮状态
+            var currentButtons = player.Buttons;
+            var rKeyButton = PlayerButtons.Reload;
+            
+            // 检测R键是否按下
+            var rWasPressed = (playerInfo.PrevButtons & rKeyButton) != 0;
+            var rIsPressed = (currentButtons & rKeyButton) != 0;
+
+            // 检测R键从释放到按下的瞬间（触发一次）
+            if (!rWasPressed && rIsPressed)
+            {
+                // 检查是否在冷却中
+                if (_playerCooldowns.ContainsKey(steamId))
+                {
+                    var cooldownEndTime = _playerCooldowns[steamId];
+                    if (currentTime < cooldownEndTime)
+                    {
+                        var remainingTime = cooldownEndTime - currentTime;
+                        player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}技能冷却中，剩余时间: {remainingTime:F1}秒");
+                    }
+                    else
+                    {
+                        // 冷却结束，触发加速技能
+                        ActivateSpeedBoost(player, pawn, currentTime);
+                    }
+                }
+                else
+                {
+                    // 没有冷却，直接触发加速技能
+                    ActivateSpeedBoost(player, pawn, currentTime);
+                }
+            }
+
+            // 保存当前按钮状态，用于下次检测
+            playerInfo.PrevButtons = currentButtons;
+        }
+
+        private void ActivateSpeedBoost(CCSPlayerController player, CCSPlayerPawn pawn, float currentTime)
+        {
+            if (pawn == null || !pawn.IsValid || pawn.Health <= 0)
+                return;
+
+            var steamId = player.SteamID;
+
+            // 保存原始FOV（如果还没有保存），默认FOV是90
+            if (!_playerOriginalFov.ContainsKey(steamId))
+            {
+                var currentFov = player.DesiredFOV;
+                // 如果FOV无效（为0或小于90），使用默认值90
+                _playerOriginalFov[steamId] = (currentFov <= 0 || currentFov < 90) ? 90 : currentFov;
+            }
+
+            // 使用技能
+            pawn.VelocityModifier = Config.SpeedBoostMultiplier;
+            _playerSpeedBoostStartTime[steamId] = currentTime;
+            _playerSpeedBoostEndTime[steamId] = currentTime + Config.SpeedBoostDuration;
+            _playerCooldowns[steamId] = currentTime + Config.SpeedBoostCooldown;
+
+            player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}加速技能已激活！持续 {Config.SpeedBoostDuration} 秒");
+        }
+
+        // 渐进更新FOV
+        private void UpdateFovProgressively(CCSPlayerController player, float currentTime)
+        {
+            if (!_playerSpeedBoostStartTime.ContainsKey(player.SteamID) || 
+                !_playerOriginalFov.ContainsKey(player.SteamID))
+                return;
+
+            var steamId = player.SteamID;
+            var startTime = _playerSpeedBoostStartTime[steamId];
+            var endTime = _playerSpeedBoostEndTime[steamId];
+            var elapsed = currentTime - startTime;
+            var duration = endTime - startTime;
+            var phaseDuration = duration / 3.0f; // 每个阶段占1/3时间
+
+            // 默认FOV是90，确保从90开始渐进
+            const int defaultFov = 90;
+            var originalFov = (int)_playerOriginalFov[steamId];
+            // 如果原始FOV无效（为0或小于90），使用默认值90
+            if (originalFov <= 0 || originalFov < defaultFov)
+            {
+                originalFov = defaultFov;
+            }
+            
+            var targetFov = Config.SpeedBoostFov;
+            int currentFov;
+
+            if (elapsed < phaseDuration)
+            {
+                // 阶段1：从90（默认FOV）渐进到目标FOV
+                var progress = elapsed / phaseDuration;
+                currentFov = Lerp(defaultFov, targetFov, progress);
+            }
+            else if (elapsed < phaseDuration * 2)
+            {
+                // 阶段2：保持目标FOV
+                currentFov = targetFov;
+            }
+            else
+            {
+                // 阶段3：从目标FOV渐进还原到90（默认FOV）
+                var progress = (elapsed - phaseDuration * 2) / phaseDuration;
+                currentFov = Lerp(targetFov, defaultFov, progress);
+            }
+
+            SetFov(player, currentFov);
+        }
+
+        // 线性插值函数
+        private int Lerp(int start, int end, float t)
+        {
+            // 限制t在0-1之间
+            t = Math.Max(0, Math.Min(1, t));
+            return (int)(start + (end - start) * t);
+        }
+
+        // 设置玩家FOV
+        private void SetFov(CCSPlayerController? player, int desiredFov)
+        {
+            if (player == null || !player.IsValid)
+                return;
+
+            player.DesiredFOV = (uint)desiredFov;
+            Utilities.SetStateChanged(player, "CBasePlayerController", "m_iDesiredFOV");
+        }
+    }
+}

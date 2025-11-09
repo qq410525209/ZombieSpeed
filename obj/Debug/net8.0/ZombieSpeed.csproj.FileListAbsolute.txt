@@ -1,0 +1,12 @@
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.csproj.AssemblyReference.cache
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.AssemblyInfoInputs.cache
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.AssemblyInfo.cs
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\ZombieSpeed.deps.json
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\ZombieSpeed.dll
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\ZombieSpeed.pdb
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.dll
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\refint\ZombieSpeed.dll
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.pdb
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ref\ZombieSpeed.dll

@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Administrator\\source\\repos\\ZombieSpeed\\ZombieSpeed\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C56E5D7B-C6DC-4BFF-958E-44B260DCEFA9}|ZombieSpeed.csproj|c:\\users\\administrator\\source\\repos\\zombiespeed\\zombiespeed\\zombiespeed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C56E5D7B-C6DC-4BFF-958E-44B260DCEFA9}|ZombieSpeed.csproj|solutionrelative:zombiespeed.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ZombieSpeed.cs",
+              "DocumentMoniker": "C:\\Users\\Administrator\\source\\repos\\ZombieSpeed\\ZombieSpeed\\ZombieSpeed.cs",
+              "RelativeDocumentMoniker": "ZombieSpeed.cs",
+              "ToolTip": "C:\\Users\\Administrator\\source\\repos\\ZombieSpeed\\ZombieSpeed\\ZombieSpeed.cs",
+              "RelativeToolTip": "ZombieSpeed.cs",
+              "ViewState": "AgIAAA8AAAAAAAAAAAA1wB0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-08T03:33:06.078Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
