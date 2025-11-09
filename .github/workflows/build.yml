@@ -62,7 +62,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.get_module_version.outputs.ARTIFACT_NAME }}
-          path: |
-            ./release/${{ steps.get_module_version.outputs.ARTIFACT_NAME }}.zip
-            ./release/${{ env.PROJECT_NAME }}
+          path: ./release/${{ steps.get_module_version.outputs.ARTIFACT_NAME }}.zip
 

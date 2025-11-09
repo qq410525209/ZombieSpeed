@@ -46,7 +46,7 @@ namespace ZombieSpeed
         public override string ModuleName => "ZombieSpeed";
         public override string ModuleDescription => "T阵营玩家加速技能";
         public override string ModuleAuthor => "僵尸加速技能";
-        public override string ModuleVersion => "0.0.3";
+        public override string ModuleVersion => "0.0.4";
 
         public ZombieSpeedConfig Config { get; set; } = new();
 
