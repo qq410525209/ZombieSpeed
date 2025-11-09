@@ -37,6 +37,15 @@ jobs:
       - name: Publish project
         run: dotnet publish --configuration Release --no-build --output ./publish
 
+      - name: Extract version from code
+        id: get_module_version
+        run: |
+          VERSION=$(grep 'ModuleVersion =>' ZombieSpeed.cs | sed -n 's/.*ModuleVersion => "\([^"]*\)".*/\1/p' | head -1)
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "ARTIFACT_NAME=${{ env.PROJECT_NAME }}$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+          echo "Artifact name: ${{ env.PROJECT_NAME }}$VERSION"
+
       - name: Create plugin directory
         run: |
           mkdir -p ./release/${{ env.PROJECT_NAME }}
@@ -46,14 +55,14 @@ jobs:
       - name: Create ZIP archive
         run: |
           cd ./release
-          zip -r ${{ env.PROJECT_NAME }}-${{ github.sha }}.zip ${{ env.PROJECT_NAME }}/
+          zip -r ${{ steps.get_module_version.outputs.ARTIFACT_NAME }}.zip ${{ env.PROJECT_NAME }}/
           cd ..
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: plugin-build
+          name: ${{ steps.get_module_version.outputs.ARTIFACT_NAME }}
           path: |
-            ./release/${{ env.PROJECT_NAME }}.zip
+            ./release/${{ steps.get_module_version.outputs.ARTIFACT_NAME }}.zip
             ./release/${{ env.PROJECT_NAME }}
 
