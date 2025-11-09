@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ZombieSpeed")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d3cc9e5e59969d1527051d1e3056e19ae52b347d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+06c715cf4d077777416212362b0a78b73a35819b")]
 [assembly: System.Reflection.AssemblyProductAttribute("ZombieSpeed")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ZombieSpeed")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -11,3 +11,9 @@ C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ref
 C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.pdb
 C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ref\ZombieSpeed.dll
 C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.sourcelink.json
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\lang\en.json
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\lang\jp.json
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\lang\pt-BR.json
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\lang\ru.json
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\lang\zh-Hans.json
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\bin\Debug\net8.0\lang\zh-Hant.json
