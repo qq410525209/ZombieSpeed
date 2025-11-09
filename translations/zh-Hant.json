@@ -1,0 +1,9 @@
+{
+  "prefix": "[加速技能]",
+  "must_be_alive": "你必須存活才能使用此技能！",
+  "only_terrorist": "只有T陣營玩家可以使用此技能！",
+  "cooldown_remaining": "技能冷卻中，剩餘時間: {0}秒",
+  "skill_activated": "加速技能已啟動！持續 {0} 秒",
+  "invalid_key_config": "無效的按鍵配置 '{0}'，使用預設值 'R' (Reload)"
+}
+

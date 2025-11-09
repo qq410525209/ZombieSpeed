@@ -1,0 +1,9 @@
+{
+  "prefix": "[Habilidade de Velocidade]",
+  "must_be_alive": "Você deve estar vivo para usar esta habilidade!",
+  "only_terrorist": "Apenas jogadores da equipe Terrorista podem usar esta habilidade!",
+  "cooldown_remaining": "Habilidade em recarga, tempo restante: {0} segundos",
+  "skill_activated": "Habilidade de velocidade ativada! Duração: {0} segundos",
+  "invalid_key_config": "Configuração de tecla inválida '{0}', usando valor padrão 'R' (Recarregar)"
+}
+

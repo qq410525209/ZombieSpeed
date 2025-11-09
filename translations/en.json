@@ -1,0 +1,9 @@
+{
+  "prefix": "[Speed Boost]",
+  "must_be_alive": "You must be alive to use this skill!",
+  "only_terrorist": "Only Terrorist team players can use this skill!",
+  "cooldown_remaining": "Skill is on cooldown, remaining time: {0} seconds",
+  "skill_activated": "Speed boost skill activated! Duration: {0} seconds",
+  "invalid_key_config": "Invalid key configuration '{0}', using default value 'R' (Reload)"
+}
+

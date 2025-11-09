@@ -29,5 +29,8 @@ namespace ZombieSpeed
 
         [JsonPropertyName("SpeedBoostKey")]
         public string SpeedBoostKey { get; set; } = "R";
+
+        [JsonPropertyName("Language")]
+        public string Language { get; set; } = "en";
     }
 }

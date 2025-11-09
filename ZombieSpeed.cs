@@ -88,7 +88,8 @@ namespace ZombieSpeed
             {
                 // 如果配置无效，使用默认值 R (Reload)
                 _speedBoostKey = PlayerButtons.Reload;
-                Server.PrintToConsole($"[ZombieSpeed] 无效的按键配置 '{config.SpeedBoostKey}'，使用默认值 'R' (Reload)");
+                // 在 OnConfigParsed 中 Localizer 可能还未初始化，使用英文提示
+                Server.PrintToConsole($"[ZombieSpeed] Invalid key configuration '{config.SpeedBoostKey ?? "null"}', using default value 'R' (Reload)");
             }
         }
 
@@ -212,14 +213,14 @@ namespace ZombieSpeed
             var pawn = player.PlayerPawn.Value;
             if (pawn == null || !pawn.IsValid || pawn.Health <= 0)
             {
-                player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}你必须存活才能使用此技能！");
+                player.PrintToChat($" {ChatColors.Green}{Localizer["prefix"]} {ChatColors.White}{Localizer["must_be_alive"]}");
                 return;
             }
 
             // 检查是否为T阵营
             if (player.Team != CsTeam.Terrorist)
             {
-                player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}只有T阵营玩家可以使用此技能！");
+                player.PrintToChat($" {ChatColors.Green}{Localizer["prefix"]} {ChatColors.White}{Localizer["only_terrorist"]}");
                 return;
             }
 
@@ -233,7 +234,7 @@ namespace ZombieSpeed
                 if (currentTime < cooldownEndTime)
                 {
                     var remainingTime = cooldownEndTime - currentTime;
-                    player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}技能冷却中，剩余时间: {remainingTime:F1}秒");
+                    player.PrintToChat($" {ChatColors.Green}{Localizer["prefix"]} {ChatColors.White}{Localizer["cooldown_remaining", $"{remainingTime:F1}"]}");
                     return;
                 }
             }
@@ -254,7 +255,7 @@ namespace ZombieSpeed
                 _playerSpeedBoostEndTime[steamId] = currentTime + Config.SpeedBoostDuration;
                 _playerCooldowns[steamId] = currentTime + Config.SpeedBoostCooldown;
 
-                player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}加速技能已激活！持续 {Config.SpeedBoostDuration} 秒");
+                player.PrintToChat($" {ChatColors.Green}{Localizer["prefix"]} {ChatColors.White}{Localizer["skill_activated", $"{Config.SpeedBoostDuration}"]}");
             }
         }
 
@@ -290,7 +291,7 @@ namespace ZombieSpeed
                     if (currentTime < cooldownEndTime)
                     {
                         var remainingTime = cooldownEndTime - currentTime;
-                        player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}技能冷却中，剩余时间: {remainingTime:F1}秒");
+                        player.PrintToChat($" {ChatColors.Green}{Localizer["prefix"]} {ChatColors.White}{Localizer["cooldown_remaining", $"{remainingTime:F1}"]}");
                     }
                     else
                     {
@@ -330,7 +331,7 @@ namespace ZombieSpeed
             _playerSpeedBoostEndTime[steamId] = currentTime + Config.SpeedBoostDuration;
             _playerCooldowns[steamId] = currentTime + Config.SpeedBoostCooldown;
 
-            player.PrintToChat($" {ChatColors.Green}[加速技能] {ChatColors.White}加速技能已激活！持续 {Config.SpeedBoostDuration} 秒");
+            player.PrintToChat($" {ChatColors.Green}{Localizer["prefix"]} {ChatColors.White}{Localizer["skill_activated", $"{Config.SpeedBoostDuration}"]}");
         }
 
         // 渐进更新FOV
