@@ -90,6 +90,7 @@ ZombieSpeed is a CounterStrikeSharp plugin developed for Counter-Strike 2, provi
 | `SpeedBoostMultiplier` | float | 1.5 | 速度倍率（1.5 = 150% 速度） |
 | `SpeedBoostDuration` | float | 3.0 | 加速持续时间（秒） |
 | `SpeedBoostFov` | int | 120 | 加速时的目标 FOV 值 |
+| `SpeedBoostKey` | string | "R" | 激活加速技能的按键（支持：Alt1, Alt2, Attack, Attack2, Attack3, Bullrush, Cancel, Duck, Grenade1, Grenade2, Space, Left, W, A, S, D, E, R, Shift, Right, Run, Walk, Weapon1, Weapon2, Zoom, Tab, Inspect） |
 
 #### 配置示例
 
@@ -99,7 +100,8 @@ ZombieSpeed is a CounterStrikeSharp plugin developed for Counter-Strike 2, provi
   "SpeedBoostCooldown": 5.0,
   "SpeedBoostMultiplier": 1.5,
   "SpeedBoostDuration": 3.0,
-  "SpeedBoostFov": 120
+  "SpeedBoostFov": 120,
+  "SpeedBoostKey": "R"
 }
 ```
 
@@ -109,6 +111,7 @@ ZombieSpeed is a CounterStrikeSharp plugin developed for Counter-Strike 2, provi
 - **SpeedBoostMultiplier**：建议设置在 1.2-2.0 之间，过高可能影响游戏体验
 - **SpeedBoostDuration**：建议设置在 2-5 秒之间
 - **SpeedBoostFov**：建议设置在 100-130 之间，过大会导致画面变形
+- **SpeedBoostKey**：默认为 "R"（换弹键），可配置为其他按键。如果配置无效，将自动使用默认值 "R"
 
 ### English
 
@@ -122,6 +125,7 @@ Configuration file location: `configs/ZombieSpeed.json`
 | `SpeedBoostMultiplier` | float | 1.5 | Speed multiplier (1.5 = 150% speed) |
 | `SpeedBoostDuration` | float | 3.0 | Speed boost duration (seconds) |
 | `SpeedBoostFov` | int | 120 | Target FOV value during speed boost |
+| `SpeedBoostKey` | string | "R" | Key to activate speed boost skill (Supported: Alt1, Alt2, Attack, Attack2, Attack3, Bullrush, Cancel, Duck, Grenade1, Grenade2, Space, Left, W, A, S, D, E, R, Shift, Right, Run, Walk, Weapon1, Weapon2, Zoom, Tab, Inspect) |
 
 #### Configuration Example
 
@@ -131,7 +135,8 @@ Configuration file location: `configs/ZombieSpeed.json`
   "SpeedBoostCooldown": 5.0,
   "SpeedBoostMultiplier": 1.5,
   "SpeedBoostDuration": 3.0,
-  "SpeedBoostFov": 120
+  "SpeedBoostFov": 120,
+  "SpeedBoostKey": "R"
 }
 ```
 
@@ -141,6 +146,7 @@ Configuration file location: `configs/ZombieSpeed.json`
 - **SpeedBoostMultiplier**：Recommended between 1.2-2.0, too high may affect gameplay
 - **SpeedBoostDuration**：Recommended between 2-5 seconds
 - **SpeedBoostFov**：Recommended between 100-130, too high may cause screen distortion
+- **SpeedBoostKey**：Default is "R" (reload key), can be configured to other keys. If configuration is invalid, will automatically use default value "R"
 
 ---
 
@@ -153,7 +159,7 @@ Configuration file location: `configs/ZombieSpeed.json`
 1. **按键方式**（推荐）
    - 加入 T 阵营（恐怖分子）
    - 确保角色存活
-   - 按下 **R 键**（换弹键）即可激活加速技能
+   - 按下配置的按键（默认为 **R 键**/换弹键）即可激活加速技能
 
 2. **命令方式**
    - 在聊天框输入：`!speedboost` 或 `/speedboost`
@@ -182,7 +188,7 @@ Configuration file location: `configs/ZombieSpeed.json`
 1. **Key Binding Method** (Recommended)
    - Join Terrorist team
    - Ensure your character is alive
-   - Press the **R key** (reload key) to activate the speed boost skill
+   - Press the configured key (default is **R key**/reload key) to activate the speed boost skill
 
 2. **Command Method**
    - Type in chat: `!speedboost` or `/speedboost`

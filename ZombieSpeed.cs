@@ -41,7 +41,6 @@ namespace ZombieSpeed
         };
     }
 
-    // [MinimumApiVersion(160)]
     public class ZombieSpeed : BasePlugin, IPluginConfig<ZombieSpeedConfig>
     {
         public override string ModuleName => "ZombieSpeed";
@@ -66,6 +65,9 @@ namespace ZombieSpeed
         // 存储每个玩家的原始FOV（用于加速结束后还原）
         private Dictionary<ulong, uint> _playerOriginalFov = new Dictionary<ulong, uint>();
 
+        // 存储配置的按键
+        private PlayerButtons _speedBoostKey = PlayerButtons.Reload;
+
         // 存储玩家信息
         private class PlayerInfo
         {
@@ -75,6 +77,19 @@ namespace ZombieSpeed
         public void OnConfigParsed(ZombieSpeedConfig config)
         {
             Config = config;
+            
+            // 解析配置的按键名称
+            if (!string.IsNullOrEmpty(config.SpeedBoostKey) && 
+                Buttons.ButtonMapping.TryGetValue(config.SpeedBoostKey, out var button))
+            {
+                _speedBoostKey = button;
+            }
+            else
+            {
+                // 如果配置无效，使用默认值 R (Reload)
+                _speedBoostKey = PlayerButtons.Reload;
+                Server.PrintToConsole($"[ZombieSpeed] 无效的按键配置 '{config.SpeedBoostKey}'，使用默认值 'R' (Reload)");
+            }
         }
 
         public override void Load(bool hotReload)
@@ -260,14 +275,13 @@ namespace ZombieSpeed
 
             // 获取当前按钮状态
             var currentButtons = player.Buttons;
-            var rKeyButton = PlayerButtons.Reload;
             
-            // 检测R键是否按下
-            var rWasPressed = (playerInfo.PrevButtons & rKeyButton) != 0;
-            var rIsPressed = (currentButtons & rKeyButton) != 0;
+            // 检测配置的按键是否按下
+            var keyWasPressed = (playerInfo.PrevButtons & _speedBoostKey) != 0;
+            var keyIsPressed = (currentButtons & _speedBoostKey) != 0;
 
-            // 检测R键从释放到按下的瞬间（触发一次）
-            if (!rWasPressed && rIsPressed)
+            // 检测配置的按键从释放到按下的瞬间（触发一次）
+            if (!keyWasPressed && keyIsPressed)
             {
                 // 检查是否在冷却中
                 if (_playerCooldowns.ContainsKey(steamId))

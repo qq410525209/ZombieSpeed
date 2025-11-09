@@ -10,3 +10,4 @@ C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\Zom
 C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\refint\ZombieSpeed.dll
 C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.pdb
 C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ref\ZombieSpeed.dll
+C:\Users\Administrator\source\repos\ZombieSpeed\ZombieSpeed\obj\Debug\net8.0\ZombieSpeed.sourcelink.json

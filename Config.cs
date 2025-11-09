@@ -26,5 +26,8 @@ namespace ZombieSpeed
 
         [JsonPropertyName("SpeedBoostFov")]
         public int SpeedBoostFov { get; set; } = 120;
+
+        [JsonPropertyName("SpeedBoostKey")]
+        public string SpeedBoostKey { get; set; } = "R";
     }
 }
