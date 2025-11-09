@@ -1,0 +1,59 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+env:
+  DOTNET_VERSION: '8.0.x'
+  PROJECT_NAME: ZombieSpeed
+
+jobs:
+  build:
+    name: Build Plugin
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build project
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Publish project
+        run: dotnet publish --configuration Release --no-build --output ./publish
+
+      - name: Create plugin directory
+        run: |
+          mkdir -p ./release/${{ env.PROJECT_NAME }}
+          cp -r ./publish/* ./release/${{ env.PROJECT_NAME }}/
+          cp -r ./translations ./release/${{ env.PROJECT_NAME }}/ 2>/dev/null || true
+
+      - name: Create ZIP archive
+        run: |
+          cd ./release
+          zip -r ${{ env.PROJECT_NAME }}-${{ github.sha }}.zip ${{ env.PROJECT_NAME }}/
+          cd ..
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: plugin-build
+          path: |
+            ./release/${{ env.PROJECT_NAME }}.zip
+            ./release/${{ env.PROJECT_NAME }}
+
