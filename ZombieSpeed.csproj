@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="translations\*.json">
+        <None Include="lang\*.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
